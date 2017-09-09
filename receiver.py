@@ -27,7 +27,6 @@ while True:
         break
     upd_socket.sendto("back message".encode("UTF-8"), (address))
     print("sending data")
-    data, addr = upd_socket.recvfrom(1024)
     print("it reach end")
     break
 
