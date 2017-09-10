@@ -3,77 +3,77 @@ import sys
 
 
 # Networking Setting
-host = 'localhost'
-port = 3102
+host = "localhost"
+port = 3000
 address = (host, port)
+upd_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+upd_socket.bind((address))
+
+
+
+
+
+# Get Sent Data
+def segment(data):
+    data = data.decode("utf-8")
+    received_syn = int(data.split()[0])
+    received_seq = int(data.split()[1])
+    received_ack = int(data.split()[2])
+    return received_syn, received_seq, received_ack
+
+
+
+
+
+# Receiver's handshake data
+class handshake_data:
+    def __init__(self, syn = 0, seq = 0, ack = 0):
+        self.syn = syn
+        self.seq = seq
+        self.ack = ack
+        self.string = str(self.syn) + " " +str(self.seq) + " " + str(self.ack)
+        self.string_data = self.string.encode("utf-8")
 
 
 
 
 
 # Hand Shake Start here
-# Receive Data From Sender
-upd_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-upd_socket.bind((address))
-# Trying To Receive Data Countinusous
+data, addr = upd_socket.recvfrom(1024)
+received_syn, received_seq, received_ack = segment(data)
 
+if received_syn == 1:
+    upd_socket.sendto(handshake_data(syn=1, seq=0, ack=received_seq+1).string_data, ("localhost", 3001))
+
+data, addr = upd_socket.recvfrom(1024)
+# 把这些信息目前存着就好
+received_syn, received_seq, received_ack = segment(data)
+print(received_syn, received_seq, received_ack)
+print("connected successful")
+
+
+
+
+# Data Transfer Start Here
 while True:
-    print("accepting data")
     data, addr = upd_socket.recvfrom(1024)
-    # byte data to string data
-    print(data.decode('utf-8'))
-    if data.decode('utf-8') == "10":
-        print("there is a 10")
-        break
-    upd_socket.sendto("back message".encode("UTF-8"), (address))
-    print("sending data")
-    print("it reach end")
-    break
-
-    # number = data.decode("UTF-8")
+    print(data)
 
 
 
 
 
-# receive data from sender, add 1 to it and send back the total sum
-
-# receive 1024 byte at a time
-# number = int(data.decoded("UTF-8")) + 1
-# print("I just received a data" + data)
-# data = str(number)
-# print("now i want to send a data", data)
-# upd_socket.send(data.encode('UTF-8'))
 
 
 
 
-# Prepare for receive data
-# content = ""
 
-
-
-# Receive Data From Sender
-# while True:
-#     # The Content of Received Data
-#     # data = conn.recv(1024)
-#     if not data:
-#         print("There is no data come")
-#         break
-#     else:
-#         # Transfer Bytes File To String
-#         content += data.decode('utf-8')
-#         # TRY: receiver send a data to sender
-#         conn.send(data)
-#         break
-
-
-
-# Create a File For Content
-# path = "/Users/keiichi/Desktop/9331_project/data.txt"
+# Create A File For Accepting File
+# path = sys.argv[1]
 # file = open("data.txt", "w")
-# file.write(content)
 # file.close()
+
+
 
 
 
